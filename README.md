@@ -18,18 +18,21 @@ It serves as the **core microservice** in my AI Backend portfolio before extendi
 ---
 
 ## Tech Stack
-Component       |           Technology
-**Language**                Go (1.25)
-**Framework**               Fiber v2
-**Database**                PostgreSQL
-**Driver**                  pgx/v5 (connection pool)
-**Testing**                 `testing` + `testing/assert`
-**Deployment**              Docker + Railway / AWS (coming soon)
+|  Component       |           Technology  |
+|--------------------|-----------------------|
+|**Language**         |       Go (1.25)     |
+|**Framework**         |      Fiber v2      |
+| **Database**         |       PostgreSQL   |
+| **Driver**        |          `pgx/v5` (connection pool) |
+| **Testing**       |          `testing` + `testing/assert`|
+| **Deployment**      |        Docker + Railway / AWS (coming soon) |
 
 ---
 
 
 ## Setup & Run
+
+
 ### 1. Clone the repository
 ```bash
 https://github.com/ai-backend-course/notes-memory-rebuild.git
