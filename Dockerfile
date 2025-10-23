@@ -16,6 +16,9 @@ COPY . .
 # 6 Build the Go binary (optimized)
 RUN go build -o notes-api main.go
 
+# Optional: Run tests during build (can comment out for prod)
+# RUN go test -v ./...
+
 # 7 Use a smaller image for production
 FROM alpine:latest
 

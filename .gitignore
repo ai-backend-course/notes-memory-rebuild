@@ -1,4 +1,5 @@
 # ---- Go ----
+notes-api
 *.exe
 *.out
 *.test
@@ -13,12 +14,18 @@ pkg/
 **/pgdata/
 **/data/
 **/volumes/
-
-# ---- OS / Editor ----
-.DS_Store
-.vscode/
-.idea/
+*.pid
 
 # ---- Logs ----
 *.log
 logs/
+
+# ---- IDE / OS ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# ---- Test / Coverage ----
+coverage.out
+*.cov

@@ -2,15 +2,20 @@ package main
 
 import (
 	"log"
-	"os"
-
 	"notes-memory-rebuild/database"
 	"notes-memory-rebuild/handlers"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load variables from .env
+	if err := godotenv.Load(); err != nil {
+		log.Println("⚠️ No .env file found, using system env vars")
+	}
+
 	// 1) Create the web app (router + server)
 	app := fiber.New() // Returns a Fiber app instance
 
@@ -26,6 +31,7 @@ func main() {
 
 	// 4) Figure out which port to use
 	// PORT is commonly supplied by hosting platforms (Render, Railway, etc.)
+	// Read variables safely
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // local default so it "just works" on your machine
