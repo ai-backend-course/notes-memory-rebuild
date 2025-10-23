@@ -2,7 +2,7 @@
 
 This project is part of my **AI Backend Course**, where I'm mastering Go, Postgres, and production backend design by rebuilding everything with AI guidance and deploying real services.
 
---
+---
 
 ## Overview
 The **Notes API** is a foundational project that demonstrates: 
@@ -26,7 +26,7 @@ Component       |           Technology
 **Testing**                 `testing` + `testing/assert`
 **Deployment**              Docker + Railway / AWS (coming soon)
 
---
+---
 
 
 ## Setup & Run
