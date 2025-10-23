@@ -1,5 +1,5 @@
 # 1 Use official lightweight Go image
-FROM golang:1.25.1-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 # 2 Set working directory inside container
 WORKDIR /app
@@ -23,12 +23,14 @@ WORKDIR /root/
 
 # 8 Copy binary from builder stage
 COPY --from=builder /app/notes-api .
+COPY migrations ./migrations
+COPY entrypoint.sh . 
 
-# 9 Copy .env file (if it exists)
-COPY --from=builder /app/.env* ./
+#  9 Install Postgres client for psql + pg_isready
+RUN apk add --no-cache postgresql-client
 
 # 10 Expose port 8080 for HTTP traffic
 EXPOSE 8080
 
-# 11 Run the application
-CMD ["./notes-api"]
+# 11 Run the entrypoint script
+ENTRYPOINT ["./entrypoint.sh"]
