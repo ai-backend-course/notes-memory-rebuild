@@ -24,8 +24,11 @@ WORKDIR /root/
 # 8 Copy binary from builder stage
 COPY --from=builder /app/notes-api .
 
-# 9 Expose port 8080 for HTTP traffic
+# 9 Copy .env file (if it exists)
+COPY --from=builder /app/.env* ./
+
+# 10 Expose port 8080 for HTTP traffic
 EXPOSE 8080
 
-#10 Run the application
+# 11 Run the application
 CMD ["./notes-api"]

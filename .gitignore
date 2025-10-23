@@ -1,1 +1,24 @@
+# ---- Go ----
+*.exe
+*.out
+*.test
+bin/
+pkg/
+
+# ---- Environment ----
 .env
+.env.*
+
+# ---- Docker ----
+**/pgdata/
+**/data/
+**/volumes/
+
+# ---- OS / Editor ----
+.DS_Store
+.vscode/
+.idea/
+
+# ---- Logs ----
+*.log
+logs/
