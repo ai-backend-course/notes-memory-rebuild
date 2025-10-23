@@ -12,6 +12,7 @@ The **Notes API** is a foundational project that demonstrates:
 - CRUD operations (Create, Read, Update, Delete)
 - JSON request/response handling
 - Error handling and validation
+- Testing and Docker integration (upcoming)
 
 It serves as the **core microservice** in my AI Backend portfolio before extending into AI-integrated APIs (e.g., RAG Engine, AI Chat Service).
 
@@ -36,4 +37,50 @@ It serves as the **core microservice** in my AI Backend portfolio before extendi
 ### 1. Clone the repository
 ```bash
 https://github.com/ai-backend-course/notes-memory-rebuild.git
-cd notes-memory-rebuild
+cd notes-memory-rebuild  
+```
+
+### 2. Environment variables
+Create a .env file:
+```bash
+DATABASE_URL=postgres://postgres:password@localhost:5432/ai_backend?sslmode=disable
+```
+
+### 3. Run the Server
+```bash
+go run main.go
+```
+Server runs on http://localhost:8080
+
+
+## API Endpoints
+|  Method    |      Endpoint | Description |
+|--------------------|-----------------------|--------------|
+|**GET**         |      /health    |  Check server health   |
+|**POST**         |      /notes     |  Create a note      |
+| **GET**         |      /notes  |    Fetch all notes       |
+| **PUT**        |       /notes/:id |  Update an existing note  |
+| **DELETE**       |     /notes/:id | Delete a note     |
+
+## Progress Log
+|  Day    |      Milestone |
+|--------------------|--------------|
+|**Day 11**         |      Introduced Go testing basics  |
+|**Day 12**         |      Memory rebuild project skeleton   |
+|**Day 13**         |      Database connection + ping test    |
+| **Day 14**        |      Created `notes` table and migration |
+| **Day 15**       |     Implemented a `CreateNote` handler |
+|**Day 13**         |     Implemented a `GetNotes` handler   |
+| **Day 14**        |      Implemented a `UpdateNote` handler |
+| **Day 15**       |     Implemented a `DeleteNote` handler (Full CRUD Complete) |
+
+## Learning Objectives
+- Strengthen backend fundamentals with Go and SQL
+- Repetitive Practice through the AI Backend Course
+- Learn structure production-grade APIs
+- Prepare for advanced AI-backend layers (vector search, embeddings, RAG APIs)
+
+## Author 
+**Jeff Ellis**  
+Backend Developer | AI Backend Course  
+[AI Backend Course Organization](https://github.com/ai-backend-course/notes-memory-rebuild)

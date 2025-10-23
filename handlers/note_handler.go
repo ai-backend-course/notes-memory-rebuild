@@ -152,3 +152,41 @@ func UpdateNote(c *fiber.Ctx) error {
 	}
 	return c.JSON(note)
 }
+
+// DeleteNote handles DELETE /notes/:id
+func DeleteNote(c *fiber.Ctx) error {
+	// 1. Get the ID from the URL
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Missing note ID",
+		})
+	}
+
+	// 2. Create context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// 3. Run DELETE query
+	query := `DELETE FROM notes WHERE id = $1;`
+	cmd, err := database.Pool.Exec(ctx, query, id)
+	if err != nil {
+		log.Println("❌ Delete error:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Database error during delete",
+		})
+	}
+
+	// 4. Check if any row was actually deleted
+	if cmd.RowsAffected() == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Note not found",
+		})
+	}
+
+	// 5. Respond with success message
+	return c.JSON(fiber.Map{
+		"message": "Note deleted successfully",
+	})
+
+}
