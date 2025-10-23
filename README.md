@@ -74,6 +74,17 @@ Server runs on http://localhost:8080
 | **Day 14**        |      Implemented a `UpdateNote` handler |
 | **Day 15**       |     Implemented a `DeleteNote` handler (Full CRUD Complete) |
 
+---
+
+## Logging & Graceful Shutdown
+- Uses **Zerolog** for JSON-formatted logs suitable for cloud dashboards.
+- Graceful shutdown via `os/signal` ensures clean container exits.
+- Example:
+```json
+{"level":"info", "event": "startup", "port":"8080"}
+
+---
+
 ## Learning Objectives
 - Strengthen backend fundamentals with Go and SQL
 - Repetitive Practice through the AI Backend Course
