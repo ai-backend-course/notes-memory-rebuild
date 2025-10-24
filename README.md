@@ -82,6 +82,16 @@ Server runs on http://localhost:8080
 - Example:
 ```json
 {"level":"info", "event": "startup", "port":"8080"}
+```
+---
+
+## ⚠️ Centralized Error Handling
+- Global Fiber middleware catches all errors and panics.
+- Adds a unique `request_id` for each request.
+- Returns structured JSON: 
+```json
+{"error":"Internal Server Error", "request_id":"<uuid>"}
+```
 
 ---
 
