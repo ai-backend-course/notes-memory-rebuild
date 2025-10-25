@@ -32,6 +32,11 @@ func main() {
 	app.Use(middleware.RequestTimer)
 
 	//  Register a route:
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"message": "✅ Notes API is live and connected to the database!",
+		})
+	})
 	app.Get("/health", handlers.Health)           // When someone GETs /health, call handlers.Health
 	app.Post("/notes", handlers.CreateNote)       //When a client sends a POST request to /notes, run the CreateNote function from handlers
 	app.Get("/notes", handlers.GetNotes)          //When a client sends a GET request to /notes, this will retrieve all notes.
