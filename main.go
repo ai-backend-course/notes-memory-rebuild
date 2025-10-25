@@ -20,6 +20,9 @@ func main() {
 	// Load env vars (local or Docker)
 	_ = godotenv.Load()
 
+	//  Connect to the database
+	database.Connect()
+
 	// Configure Zerolog for better readability
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
@@ -42,9 +45,6 @@ func main() {
 	app.Get("/notes", handlers.GetNotes)          //When a client sends a GET request to /notes, this will retrieve all notes.
 	app.Put("/notes/:id", handlers.UpdateNote)    // :id is a path parameter-- to capture a specific note's ID
 	app.Delete("/notes/:id", handlers.DeleteNote) // :id is a path parameter --- to delete the specific note by ID
-
-	//  Connect to the database
-	database.Connect()
 
 	// Figure out which port to use - Read variables safely
 	port := os.Getenv("PORT")
