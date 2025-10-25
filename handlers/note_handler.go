@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"notes-memory-rebuild/database"
 	"time"
 
@@ -53,6 +54,7 @@ RETURNING id, title, content, created_at, updated_at;
 	err := database.Pool.QueryRow(ctx, query, input.Title, input.Content).
 		Scan(&note.ID, &note.Title, &note.Content, &note.CreatedAt, &note.UpdatedAt)
 	if err != nil {
+		log.Println("Insert error detail:", err)
 		return fiber.NewError(fiber.StatusInternalServerError, "Database insert failed")
 	}
 
