@@ -1,4 +1,4 @@
-# 1 Use official lightweight Go image
+# --------------- Stage 1: Build ------------
 FROM golang:1.23-alpine AS builder
 
 # 2 Set working directory inside container
@@ -14,7 +14,7 @@ RUN go mod download
 COPY . . 
 
 # 6 Build the Go binary (optimized)
-RUN go build -o notes-api main.go
+RUN go build -o notes-api .
 
 # Optional: Run tests during build (can comment out for prod)
 # RUN go test -v ./...
@@ -22,18 +22,16 @@ RUN go build -o notes-api main.go
 # 7 Use a smaller image for production
 FROM alpine:latest
 
-WORKDIR /root/
+WORKDIR /app
 
 # 8 Copy binary from builder stage
 COPY --from=builder /app/notes-api .
-COPY migrations ./migrations
-COPY entrypoint.sh . 
 
-#  9 Install Postgres client for psql + pg_isready
-RUN apk add --no-cache postgresql-client
+#  9 Railway/Render will set PORT automatically
+ENV PORT=8080
 
 # 10 Expose port 8080 for HTTP traffic
 EXPOSE 8080
 
-# 11 Run the entrypoint script
-ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["./notes-api"]
