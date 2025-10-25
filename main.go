@@ -20,14 +20,16 @@ func main() {
 	// Load env vars (local or Docker)
 	_ = godotenv.Load()
 
+	// Configure Zerolog for better readability
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	// Create the web app (router + server)
 	app := fiber.New() // Returns a Fiber app instance
 
 	// Register the middleware early
 	app.Use(middleware.ErrorHandler)
+	app.Use(middleware.MetricsMiddleware)
+	app.Use(middleware.RequestTimer)
 
 	//  Register a route:
 	app.Get("/health", handlers.Health)           // When someone GETs /health, call handlers.Health
@@ -43,6 +45,21 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // local default so it "just works" on your machine
+	}
+	// Configure Zerolog based on environment
+	env := os.Getenv("APP_ENV") // e.g. "development" or "production"
+
+	if env == "production" {
+		// JSON logs for cloud dashboards
+		zerolog.TimeFieldFormat = time.RFC3339
+		log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	} else {
+		// Switch to human-readable console output during local dev
+		log.Logger = log.Output(zerolog.ConsoleWriter{
+			Out:        os.Stdout,
+			TimeFormat: time.RFC3339,
+			NoColor:    false, // enable color
+		})
 	}
 
 	// Start server in goroutine
