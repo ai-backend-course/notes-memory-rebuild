@@ -4,6 +4,7 @@ import (
 	"context"
 	"notes-memory-rebuild/database"
 	"notes-memory-rebuild/handlers"
+	"notes-memory-rebuild/internal/dashboard"
 	"notes-memory-rebuild/middleware"
 	"os"
 	"os/signal"
@@ -46,6 +47,14 @@ func main() {
 	app.Get("/notes", handlers.GetNotes)          //When a client sends a GET request to /notes, this will retrieve all notes.
 	app.Put("/notes/:id", handlers.UpdateNote)    // :id is a path parameter-- to capture a specific note's ID
 	app.Delete("/notes/:id", handlers.DeleteNote) // :id is a path parameter --- to delete the specific note by ID
+	app.Get("/dashboard", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		html, err := dashboard.RenderDashboardHTML()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to render dashboard")
+		}
+		return c.SendString(html)
+	})
 
 	// Figure out which port to use - Read variables safely
 	port := os.Getenv("PORT")
