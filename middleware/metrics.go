@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"runtime"
 	"sync"
 	"time"
 
@@ -14,6 +15,8 @@ type MetricsData struct {
 	AvgDuration   float64 `json:"avg_duration"`
 	TotalErrors   int     `json:"total_errors"`
 	StartTime     string  `json:"start_time"`
+	UptimeSeconds int64   `json:"uptime_seconds"`
+	MemoryMB      float64 `json:"memory_mb"`
 }
 
 var (
@@ -54,5 +57,14 @@ func MetricsMiddleware(c *fiber.Ctx) error {
 func MetricsHandler(c *fiber.Ctx) error {
 	metricsMu.Lock()
 	defer metricsMu.Unlock()
+
+	// Uptime in seconds
+	metrics.UptimeSeconds = int64(time.Since(started).Seconds())
+
+	// Memory usage in MB
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	metrics.MemoryMB = float64(m.Alloc) / 1024 / 1024
+
 	return c.JSON(metrics)
 }
