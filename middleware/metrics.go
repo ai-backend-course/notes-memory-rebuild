@@ -8,28 +8,51 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// MetricsData holds live stats accessible from the /metrics endpoint
+type MetricsData struct {
+	TotalRequests int     `json:"total_requests"`
+	AvgDuration   float64 `json:"avg_duration"`
+	TotalErrors   int     `json:"total_errors"`
+	StartTime     string  `json:"start_time"`
+}
+
 var (
-	mu            sync.Mutex
-	totalRequests int
-	totalDuration time.Duration
+	metrics   MetricsData
+	metricsMu sync.Mutex
+	started   = time.Now()
 )
 
 // MetricsMiddleware tracks total requests and average response time.
 func MetricsMiddleware(c *fiber.Ctx) error {
 	start := time.Now()
 	err := c.Next()
-	duration := time.Since(start)
+	duration := time.Since(start).Seconds()
 
-	mu.Lock()
-	totalRequests++
-	totalDuration += duration
-	avg := totalDuration / time.Duration(totalRequests)
-	mu.Unlock()
+	metricsMu.Lock()
+	defer metricsMu.Unlock()
+
+	metrics.TotalRequests++
+	metrics.AvgDuration = ((metrics.AvgDuration * float64(metrics.TotalRequests-1)) + duration) / float64(metrics.TotalRequests)
+
+	if c.Response().StatusCode() >= 400 {
+		metrics.TotalErrors++
+	}
+
+	if metrics.StartTime == "" {
+		metrics.StartTime = started.Format(time.RFC3339)
+	}
 
 	log.Info().
-		Int("total_requests", totalRequests).
-		Dur("avg_duration", avg).
+		Int("total_requests", metrics.TotalRequests).
+		Float64("avg_duration", metrics.AvgDuration).
 		Msg("metrics update")
 
 	return err
+}
+
+// MetricsHandler returns current metrics as JSON
+func MetricsHandler(c *fiber.Ctx) error {
+	metricsMu.Lock()
+	defer metricsMu.Unlock()
+	return c.JSON(metrics)
 }
