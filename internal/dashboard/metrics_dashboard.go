@@ -72,6 +72,7 @@ var dashboardTemplate = template.Must(template.New("dash").Parse(`
 <canvas id="latChart"></canvas>
 <canvas id="errChart"></canvas>
 <canvas id="upChart"></canvas>
+<canvas id="histChart"></canvas>
 
 <script>
 let labels=[], reqData=[], durData=[], errData=[], upData=[];
@@ -127,6 +128,28 @@ const toggle=document.getElementById('themeToggle');
 toggle.onclick=()=>{ document.body.classList.toggle('dark');
   toggle.textContent=document.body.classList.contains('dark')?'☀️ Light Mode':'🌙 Dark Mode';
 };
+const histCtx=document.getElementById('histChart');
+const histChart=new Chart(histCtx,{type:'line',
+  data:{labels:[],datasets:[
+    {label:'Requests (history)',data:[],borderColor:'#007acc',fill:false,tension:.2},
+    {label:'Errors (history)',data:[],borderColor:'#d9534f',fill:false,tension:.2}
+  ]},
+  options:{scales:{x:{title:{text:'Time',display:true}},
+                   y:{beginAtZero:true}}}
+});
+
+async function loadHistory(){
+  const r=await fetch('/metrics/history'); const hist=await r.json();
+  const labels=hist.map(h=>new Date(h.timestamp).toLocaleTimeString());
+  const reqs=hist.map(h=>h.total_requests);
+  const errs=hist.map(h=>h.total_errors);
+  histChart.data.labels=labels;
+  histChart.data.datasets[0].data=reqs;
+  histChart.data.datasets[1].data=errs;
+  histChart.update();
+}
+window.onload=()=>{ fetchMetrics(); loadHistory(); };
+
 </script>
 </body>
 </html>

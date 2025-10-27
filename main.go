@@ -5,6 +5,7 @@ import (
 	"notes-memory-rebuild/database"
 	"notes-memory-rebuild/handlers"
 	"notes-memory-rebuild/internal/dashboard"
+	metricsPkg "notes-memory-rebuild/internal/metrics"
 	"notes-memory-rebuild/middleware"
 	"os"
 	"os/signal"
@@ -43,6 +44,10 @@ func main() {
 	})
 	app.Get("/health", handlers.Health) // When someone GETs /health, call handlers.Health
 	app.Get("/metrics", middleware.MetricsHandler)
+	app.Get("/metrics/history", func(c *fiber.Ctx) error {
+		history := metricsPkg.ReadAll()
+		return c.JSON(history)
+	})
 	app.Post("/notes", handlers.CreateNote)       //When a client sends a POST request to /notes, run the CreateNote function from handlers
 	app.Get("/notes", handlers.GetNotes)          //When a client sends a GET request to /notes, this will retrieve all notes.
 	app.Put("/notes/:id", handlers.UpdateNote)    // :id is a path parameter-- to capture a specific note's ID

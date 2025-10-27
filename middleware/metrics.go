@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	metricsPkg "notes-memory-rebuild/internal/metrics"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
@@ -65,6 +67,17 @@ func MetricsHandler(c *fiber.Ctx) error {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	metrics.MemoryMB = float64(m.Alloc) / 1024 / 1024
+
+	snapshot := metricsPkg.MetricSnapshot{
+		TotalRequests: metrics.TotalRequests,
+		AvgDuration:   metrics.AvgDuration,
+		TotalErrors:   metrics.TotalErrors,
+		UptimeSeconds: metrics.UptimeSeconds,
+		MemoryMB:      metrics.MemoryMB,
+		Timestamp:     time.Now().Format(time.RFC3339),
+	}
+
+	metricsPkg.Append(snapshot)
 
 	return c.JSON(metrics)
 }
