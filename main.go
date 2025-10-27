@@ -48,6 +48,12 @@ func main() {
 		history := metricsPkg.ReadAll()
 		return c.JSON(history)
 	})
+	app.Get("/metrics/export", func(c *fiber.Ctx) error {
+		if err := metricsPkg.ExportCSV(); err != nil {
+			return c.Status(500).SendString("Failed to export CSV")
+		}
+		return c.Download("metrics_history.csv")
+	})
 	app.Post("/notes", handlers.CreateNote)       //When a client sends a POST request to /notes, run the CreateNote function from handlers
 	app.Get("/notes", handlers.GetNotes)          //When a client sends a GET request to /notes, this will retrieve all notes.
 	app.Put("/notes/:id", handlers.UpdateNote)    // :id is a path parameter-- to capture a specific note's ID

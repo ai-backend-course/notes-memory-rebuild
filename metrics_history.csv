@@ -1,0 +1,4 @@
+timestamp,total_requests,avg_duration,total_errors,uptime_seconds,memory_mb
+2025-10-26T22:34:29-05:00,4,0.000,2,218,0.71
+2025-10-26T22:34:38-05:00,5,0.000,2,227,0.72
+2025-10-26T22:34:42-05:00,6,0.000,2,231,0.73

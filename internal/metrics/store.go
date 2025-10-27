@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sync"
 )
@@ -55,4 +56,29 @@ func readFile(dst *[]MetricSnapshot) error {
 func writeFile(data []MetricSnapshot) {
 	b, _ := json.MarshalIndent(data, "", "  ")
 	_ = os.WriteFile(historyFile, b, 0644)
+}
+
+// ExportCSV creates or overwrites metrics_history.csv for manual export
+func ExportCSV() error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	var data []MetricSnapshot
+	if err := readFile(&data); err != nil {
+		return err
+	}
+
+	file, err := os.Create("metrics_history.csv")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	file.WriteString("timestamp,total_requests,avg_duration,total_errors,uptime_seconds,memory_mb\n")
+	for _, m := range data {
+		line := fmt.Sprintf("%s,%d,%.3f,%d,%d,%.2f\n",
+			m.Timestamp, m.TotalRequests, m.AvgDuration, m.TotalErrors, m.UptimeSeconds, m.MemoryMB)
+		file.WriteString(line)
+	}
+	return nil
 }

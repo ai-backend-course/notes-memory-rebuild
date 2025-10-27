@@ -58,6 +58,8 @@ var dashboardTemplate = template.Must(template.New("dash").Parse(`
 <body>
 <h1>⚙️ Notes API Advanced Metrics</h1>
 <button id="themeToggle">🌙 Toggle Theme</button>
+<button id="downloadCSV" onclick="window.location='/metrics/export'">⬇️ Download CSV</button>
+
 
 <div class="metrics">
   <div class="card"><strong>Total Requests:</strong> <span id="requests" class="metric">0</span></div>
@@ -149,6 +151,8 @@ async function loadHistory(){
   histChart.update();
 }
 window.onload=()=>{ fetchMetrics(); loadHistory(); };
+
+setInterval(loadHistory, 30000); 
 
 </script>
 </body>
