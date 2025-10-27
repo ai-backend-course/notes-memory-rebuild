@@ -21,34 +21,60 @@ var dashboardTemplate = template.Must(template.New("dash").Parse(`
 <head>
 <meta charset="utf-8">
 <title>Notes API Metrics Dashboard</title>
-<script>
-async function fetch Metrics()  {
-	const res  =  await fetch('/metrics');
-	const data =  await  res.json();
-	document.getElementById('requests').innerText = data.total_requests;
-	document.getElementById('duration').innerText=data.avg_duration.toFixed(3);
-	document.getElementById('errors').innerText = data.total_errors;
-	document.getElementById('uptime').innerText = data.uptime_seconds + 's';
-	document.getElementById('memory').innerText = data.memory_mb.toFixed(2)
- + ' MB';
-}
- setInterval(fetchMetrics, 3000);
- window.onload = fetchMetrics;
- </script>
- <style>
-body { font-family: sans-serif; background: #fafafa; padding: 2rem; }
-h1 { color: #333; }
-.card { background: white; padding: 1rem 2rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-.metric { font-size: 1.5rem; color: #007acc; }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { font-family:sans-serif; background:#f6f8fa; padding:2rem; }
+  h1 { color:#333; }
+  canvas { max-width:700px; margin-top:2rem; }
+  .metrics { display:flex; gap:2rem; flex-wrap:wrap; }
+  .card { background:white; padding:1rem 1.5rem; border-radius:10px;
+          box-shadow:0 2px 5px rgba(0,0,0,0.1); min-width:160px; }
+  .metric { font-size:1.4rem; color:#007acc; }
 </style>
 </head>
 <body>
-<h1>📊 Notes API Metrics</h1>
-<div class="card"><strong>Total Requests:</strong> <span id="requests" class="metric">0</span></div>
-<div class="card"><strong>Average Duration:</strong> <span id="duration" class="metric">0</span> s</div>
-<div class="card"><strong>Total Errors:</strong> <span id="errors" class="metric">0</span></div>
-<div class="card"><strong>Uptime:</strong> <span id="uptime" class="metric">0</span></div>
-<div class="card"><strong>Memory Usage:</strong> <span id="memory" class="metric">0</span></div>
+<h1>📈 Notes API Live Metrics</h1>
+
+<div class="metrics">
+  <div class="card"><strong>Total Requests:</strong> <span id="requests" class="metric">0</span></div>
+  <div class="card"><strong>Avg Duration:</strong> <span id="duration" class="metric">0</span> s</div>
+  <div class="card"><strong>Total Errors:</strong> <span id="errors" class="metric">0</span></div>
+  <div class="card"><strong>Memory:</strong> <span id="memory" class="metric">0</span> MB</div>
+  <div class="card"><strong>Uptime:</strong> <span id="uptime" class="metric">0</span> s</div>
+</div>
+
+<canvas id="reqChart"></canvas>
+<canvas id="latChart"></canvas>
+
+<script>
+let labels=[], reqData=[], durData=[];
+const reqCtx=document.getElementById('reqChart'), latCtx=document.getElementById('latChart');
+
+const reqChart=new Chart(reqCtx,{type:'line',
+  data:{labels, datasets:[{label:'Total Requests',data:reqData, borderColor:'#007acc',fill:false,tension:.2}]},
+  options:{scales:{x:{title:{text:'Time',display:true}},y:{title:{text:'Requests',display:true},beginAtZero:true}}}
+});
+
+const latChart=new Chart(latCtx,{type:'line',
+  data:{labels, datasets:[{label:'Avg Duration (s)',data:durData, borderColor:'#e07a5f',fill:false,tension:.2}]},
+  options:{scales:{x:{title:{text:'Time',display:true}},y:{title:{text:'Seconds',display:true},beginAtZero:true}}}
+});
+
+async function fetchMetrics(){
+  const r=await fetch('/metrics'); const d=await r.json();
+  document.getElementById('requests').textContent=d.total_requests;
+  document.getElementById('duration').textContent=d.avg_duration.toFixed(3);
+  document.getElementById('errors').textContent=d.total_errors;
+  document.getElementById('memory').textContent=d.memory_mb.toFixed(2);
+  document.getElementById('uptime').textContent=d.uptime_seconds;
+
+  const t=new Date().toLocaleTimeString();
+  labels.push(t); reqData.push(d.total_requests); durData.push(d.avg_duration);
+  if(labels.length>20){labels.shift(); reqData.shift(); durData.shift();}
+  reqChart.update(); latChart.update();
+}
+setInterval(fetchMetrics,3000); window.onload=fetchMetrics;
+</script>
 </body>
 </html>
 `))
